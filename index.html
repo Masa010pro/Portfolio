@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masanso David — Software &amp; Systems Engineer</title>
+<meta name="description" content="Masanso David — Software &amp; Systems Engineer. Full-stack development, Android/AOSP &amp; Linux kernel engineering, enterprise networking, and offline AI systems based in Mukono &amp; Namanve, Uganda.">
+<meta name="theme-color" content="#05070a">
+<meta property="og:title" content="Masanso David — Software &amp; Systems Engineer">
+<meta property="og:description" content="Bridging full-stack software development, low-level kernel tuning, multi-AP network administration, and offline AI.">
+<meta property="og:type" content="website">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%2305070a'/%3E%3Ccircle cx='22' cy='50' r='6' fill='%2343e8c9'/%3E%3Ccircle cx='78' cy='50' r='6' fill='%23ffb020'/%3E%3Cpath d='M28 50 H72' stroke='%2343e8c9' stroke-width='4'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: {
+        display: ['"Space Grotesk"','sans-serif'],
+        body: ['"IBM Plex Sans"','sans-serif'],
+        mono: ['"IBM Plex Mono"','monospace'],
+      }
+    }}
+  }
+</script>
+
+<style>
+  :root{
+    --bg: #05070a;
+    --bg-2: #080b10;
+    --surface: #0d1119;
+    --surface-2: #11161f;
+    --border: #1c2430;
+    --border-soft: #161c26;
+    --ink: #e7ecf2;
+    --ink-muted: #94a1b2;
+    --ink-dim: #57626f;
+
+    --signal: #43e8c9;      /* cyan-teal — primary trace color */
+    --signal-dim: #1f6f60;
+    --hazard: #ffb020;      /* amber — field / hazard-tape accent, used sparingly */
+    --hazard-dim: #8a5c0e;
+    --violet: #8b8bf0;      /* tertiary, used only for skill tags variety */
+
+    --paper: #f4f2ea;       /* not used in dark, placeholder */
+    --trace-glow: rgba(67,232,201,.35);
+  }
+  html.light{
+    --bg: #f2f1ea;
+    --bg-2: #ebe9df;
+    --surface: #fffdf7;
+    --surface-2: #f7f5ec;
+    --border: #ddd8c8;
+    --border-soft: #e7e3d4;
+    --ink: #1a1d16;
+    --ink-muted: #565b4c;
+    --ink-dim: #8b8f7d;
+
+    --signal: #0d8a72;
+    --signal-dim: #0d8a72;
+    --hazard: #b6710a;
+    --hazard-dim: #b6710a;
+    --violet: #5450c4;
+    --trace-glow: rgba(13,138,114,.18);
+  }
+
+  *{ scroll-behavior: smooth; }
+  body{
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: background-color .3s ease, color .3s ease;
+  }
+  ::selection{ background: var(--signal); color: #04100c; }
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-track{ background:var(--bg); }
+  ::-webkit-scrollbar-thumb{ background:var(--border); border-radius:5px; }
+
+  .font-display{ font-family:'Space Grotesk',sans-serif; }
+  .font-mono{ font-family:'IBM Plex Mono',monospace; }
+  .text-signal{ color:var(--signal); }
+  .text-hazard{ color:var(--hazard); }
+  .text-violet{ color:var(--violet); }
+  .text-muted{ color:var(--ink-muted); }
+  .text-dim{ color:var(--ink-dim); }
+  .surface{ background:var(--surface); border:1px solid var(--border); }
+  .surface-2{ background:var(--surface-2); }
+  .border-token{ border-color:var(--border); }
+  .border-soft{ border-color:var(--border-soft); }
+
+  /* subtle blueprint grid, faint, only in hero */
+  .blueprint-grid{
+    background-image:
+      linear-gradient(rgba(67,232,201,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(67,232,201,.05) 1px, transparent 1px);
+    background-size: 34px 34px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 40%, transparent 90%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 40%, transparent 90%);
+  }
+
+  /* ===== Signature: PCB trace rail ===== */
+  #traceRail{
+    position: fixed; left: 22px; top: 0; bottom: 0;
+    width: 20px; z-index: 30;
+    display: none;
+  }
+  @media(min-width:1024px){ #traceRail{ display:block; } }
+  #traceRail .rail-line{
+    position:absolute; left:50%; top:0; bottom:0; width:1px;
+    background: var(--border); transform: translateX(-50%);
+  }
+  #traceRail .rail-fill{
+    position:absolute; left:50%; top:0; width:1px; height:0;
+    background: linear-gradient(180deg, var(--signal), var(--signal) 80%, transparent);
+    transform: translateX(-50%);
+    transition: height .1s linear;
+    box-shadow: 0 0 8px var(--trace-glow);
+  }
+  .rail-node{
+    position:absolute; left:50%; transform:translate(-50%,-50%);
+    width:9px; height:9px; border-radius:50%;
+    background: var(--bg); border:2px solid var(--ink-dim);
+    transition: border-color .3s ease, background .3s ease, box-shadow .3s ease;
+  }
+  .rail-node.active{
+    border-color: var(--signal); background: var(--signal);
+    box-shadow: 0 0 0 4px var(--trace-glow);
+  }
+  .rail-node .rail-label{
+    position:absolute; left:20px; top:50%; transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.08em;
+    color: var(--ink-dim); white-space:nowrap; transition: color .3s ease;
+  }
+  .rail-node.active .rail-label{ color: var(--signal); }
+
+  /* corner ticks - schematic component marker */
+  .tick{ position:relative; }
+  .tick::before,.tick::after{ content:''; position:absolute; width:10px; height:10px; border-color:var(--signal-dim); opacity:.9; }
+  .tick::before{ top:-1px; left:-1px; border-top:1.5px solid; border-left:1.5px solid; }
+  .tick::after{ bottom:-1px; right:-1px; border-bottom:1.5px solid; border-right:1.5px solid; }
+
+  .nav-link{ position:relative; color:var(--ink-muted); transition:color .2s ease; }
+  .nav-link::after{ content:''; position:absolute; left:0; bottom:-4px; width:0; height:1px; background:var(--signal); transition:width .25s ease; }
+  .nav-link:hover,.nav-link.active{ color:var(--ink); }
+  .nav-link:hover::after,.nav-link.active::after{ width:100%; }
+  .nav-link.active{ color:var(--signal); }
+
+  .btn-primary{
+    background: var(--signal); color:#04100c; font-weight:600;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 10px 28px -10px var(--trace-glow); }
+  .btn-hazard{ background:var(--hazard); color:#1a1200; font-weight:600; transition:transform .2s ease, box-shadow .2s ease; }
+  .btn-hazard:hover{ transform:translateY(-2px); box-shadow:0 10px 28px -10px rgba(255,176,32,.35); }
+  .btn-outline{ background:transparent; border:1px solid var(--border); color:var(--ink); transition:border-color .2s ease, transform .2s ease, color .2s ease; }
+  .btn-outline:hover{ border-color:var(--signal); color:var(--signal); transform:translateY(-2px); }
+
+  .badge{
+    font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.02em;
+    padding:.24rem .55rem; border-radius:3px;
+    border:1px solid var(--border); color:var(--ink-muted); background:var(--surface-2);
+    white-space:nowrap;
+  }
+  .eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:.76rem; letter-spacing:.14em; color:var(--signal); }
+  .eyebrow-hazard{ font-family:'IBM Plex Mono',monospace; font-size:.76rem; letter-spacing:.14em; color:var(--hazard); }
+
+  .card-lift{ transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+  .card-lift:hover{ transform:translateY(-4px); border-color:var(--signal-dim); box-shadow:0 16px 40px -22px rgba(0,0,0,.5); }
+
+  .pulse-dot{ width:7px; height:7px; border-radius:50%; background:var(--signal); box-shadow:0 0 0 0 var(--trace-glow); animation:pulse 2.2s infinite; }
+  @keyframes pulse{ 0%{box-shadow:0 0 0 0 var(--trace-glow);} 70%{box-shadow:0 0 0 8px rgba(0,0,0,0);} 100%{box-shadow:0 0 0 0 rgba(0,0,0,0);} }
+
+  /* terminal boot block */
+  #bootLog{ font-family:'IBM Plex Mono',monospace; font-size:.78rem; line-height:1.65; min-height:118px; }
+  #bootLog .ln{ opacity:0; animation: appear .2s forwards; }
+  @keyframes appear{ to{opacity:1;} }
+  .caret{ display:inline-block; width:7px; height:14px; background:var(--signal); vertical-align:middle; margin-left:2px; animation: blink 1s step-end infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .reveal{ opacity:0; transform:translateY(16px); transition:opacity .55s ease, transform .55s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  .skill-bar{ height:3px; border-radius:2px; background:var(--surface-2); overflow:hidden; }
+  .skill-bar>span{ display:block; height:100%; border-radius:2px; background:linear-gradient(90deg, var(--signal), var(--violet)); width:0; transition:width 1.1s cubic-bezier(.2,.8,.2,1); }
+
+  #mobileDrawer{ transform:translateX(100%); transition:transform .35s cubic-bezier(.2,.8,.2,1); }
+  #mobileDrawer.open{ transform:translateX(0); }
+
+  .dashed{ background-image: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 13px); height:1px; }
+
+  input,textarea{ background:var(--surface-2); color:var(--ink); }
+  input:focus,textarea:focus{ outline:none; box-shadow:0 0 0 2px var(--signal); }
+  input::placeholder,textarea::placeholder{ color:var(--ink-dim); }
+
+  /* image frame — schematic component, not glow-blob */
+  .schematic-frame{ position:relative; border:1px solid var(--border); }
+  .schematic-frame .frame-tag{
+    position:absolute; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.08em;
+    color: var(--signal); background: var(--bg); padding: 2px 6px; border:1px solid var(--border);
+  }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none!important; transition:none!important; } }
+</style>
+</head>
+
+<body class="font-body antialiased">
+
+<!-- ===== PCB Trace Rail (signature element, desktop only) ===== -->
+<div id="traceRail" aria-hidden="true">
+  <div class="rail-line"></div>
+  <div class="rail-fill" id="railFill"></div>
+  <div class="rail-node" data-node="home"><span class="rail-label font-mono">01 HOME</span></div>
+  <div class="rail-node" data-node="about"><span class="rail-label font-mono">02 ABOUT</span></div>
+  <div class="rail-node" data-node="engineering"><span class="rail-label font-mono">03 ENGINEERING</span></div>
+  <div class="rail-node" data-node="projects"><span class="rail-label font-mono">04 PROJECTS</span></div>
+  <div class="rail-node" data-node="contact"><span class="rail-label font-mono">05 CONTACT</span></div>
+</div>
+
+<!-- ===== NAV ===== -->
+<header id="siteHeader" class="fixed top-0 inset-x-0 z-50 border-b border-token backdrop-blur-md" style="background-color: color-mix(in srgb, var(--bg) 80%, transparent);">
+  <div class="max-w-7xl mx-auto px-5 md:px-8 lg:pl-16">
+    <div class="h-16 flex items-center justify-between">
+      <a href="#home" class="flex items-center gap-2 group">
+        <span class="w-8 h-8 flex items-center justify-center font-mono text-signal text-xs surface-2 border border-token tick">MD</span>
+        <span class="font-display font-semibold tracking-tight text-sm md:text-base">Masanso<span class="text-signal">.</span>David</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-8 font-mono text-[12.5px] uppercase">
+        <a href="#home" class="nav-link active" data-nav>Home</a>
+        <a href="#about" class="nav-link" data-nav>About</a>
+        <a href="#engineering" class="nav-link" data-nav>Engineering</a>
+        <a href="#projects" class="nav-link" data-nav>Projects</a>
+        <a href="#contact" class="nav-link" data-nav>Contact</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <button id="themeToggle" aria-label="Toggle color theme" class="w-9 h-9 flex items-center justify-center surface-2 border border-token">
+          <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5m0 15V21m9-9h-1.5M4.5 12H3m15.36 6.36l-1.06-1.06M6.7 6.7 5.64 5.64m12.72 0-1.06 1.06M6.7 17.3l-1.06 1.06M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"/></svg>
+        </button>
+        <button id="mobileMenuBtn" aria-label="Open menu" class="md:hidden w-9 h-9 flex items-center justify-center surface-2 border border-token">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <a href="#contact" class="hidden md:inline-flex btn-primary text-xs font-mono uppercase px-4 py-2">Contact Me</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div id="mobileOverlay" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden"></div>
+<aside id="mobileDrawer" class="fixed top-0 right-0 h-full w-72 z-50 surface md:hidden p-6 flex flex-col gap-1">
+  <div class="flex items-center justify-between mb-8">
+    <span class="font-mono text-xs text-dim uppercase tracking-wider">Navigate</span>
+    <button id="mobileCloseBtn" class="w-8 h-8 flex items-center justify-center surface-2 border border-token" aria-label="Close menu">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <a href="#home" class="py-3 border-b border-soft font-display text-lg" data-nav-mobile>01 — Home</a>
+  <a href="#about" class="py-3 border-b border-soft font-display text-lg" data-nav-mobile>02 — About</a>
+  <a href="#engineering" class="py-3 border-b border-soft font-display text-lg" data-nav-mobile>03 — Engineering</a>
+  <a href="#projects" class="py-3 border-b border-soft font-display text-lg" data-nav-mobile>04 — Projects</a>
+  <a href="#contact" class="py-3 border-b border-soft font-display text-lg" data-nav-mobile>05 — Contact</a>
+  <a href="#contact" class="btn-primary text-center mt-6 py-3 font-mono text-xs uppercase" data-nav-mobile>Contact Me</a>
+</aside>
+
+<main class="lg:pl-16">
+<!-- ===== 01 HOME ===== -->
+<section id="home" class="relative pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden blueprint-grid">
+  <div class="max-w-7xl mx-auto px-5 md:px-8 grid lg:grid-cols-[1.1fr,0.9fr] gap-14 items-center">
+
+    <div class="reveal">
+      <div class="flex items-center gap-2 mb-6">
+        <span class="pulse-dot"></span>
+        <span class="font-mono text-xs uppercase tracking-widest text-muted">available for engagements</span>
+      </div>
+
+      <p class="eyebrow mb-3">01 // HOME</p>
+      <h1 class="font-display font-semibold leading-[1.05] text-4xl sm:text-5xl lg:text-6xl tracking-tight">
+        Masanso David<br><span class="text-signal">Software &amp; Systems</span> Engineer
+      </h1>
+      <p class="mt-6 text-base md:text-lg text-muted max-w-xl leading-relaxed">
+        Bridging full-stack software development, low-level kernel tuning, multi-AP network administration, and offline AI — engineered from Mukono &amp; Namanve, Uganda.
+      </p>
+
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a href="#projects" class="btn-primary px-6 py-3 font-mono text-xs uppercase tracking-wide">Explore Case Studies</a>
+        <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="btn-outline px-6 py-3 font-mono text-xs uppercase tracking-wide flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 007.87 10.93c.58.1.79-.25.79-.56v-2.16c-3.2.7-3.88-1.36-3.88-1.36-.53-1.33-1.29-1.69-1.29-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 015.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.77.12 3.06.74.8 1.18 1.83 1.18 3.09 0 4.43-2.7 5.4-5.28 5.69.42.36.78 1.08.78 2.18v3.23c0 .31.21.67.8.56A11.5 11.5 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+          GitHub Profile
+        </a>
+        <a href="#contact" class="btn-outline px-6 py-3 font-mono text-xs uppercase tracking-wide">Contact Me</a>
+      </div>
+
+      <!-- terminal boot readout — signature detail -->
+      <div class="mt-10 surface border border-token max-w-lg overflow-hidden">
+        <div class="flex items-center gap-1.5 px-4 py-2 border-b border-soft surface-2">
+          <span class="w-2.5 h-2.5 rounded-full" style="background:#ff5f57"></span>
+          <span class="w-2.5 h-2.5 rounded-full" style="background:#febc2e"></span>
+          <span class="w-2.5 h-2.5 rounded-full" style="background:#28c840"></span>
+          <span class="ml-3 font-mono text-[11px] text-dim">masanso@field-node:~</span>
+        </div>
+        <div id="bootLog" class="p-4"></div>
+      </div>
+
+      <div class="mt-10 grid grid-cols-3 gap-4 max-w-lg dashed pt-6">
+        <div><p class="font-display text-2xl md:text-3xl font-semibold text-signal">33+</p><p class="text-xs text-dim font-mono uppercase mt-1">Devices Serviced</p></div>
+        <div><p class="font-display text-2xl md:text-3xl font-semibold text-hazard">Multi</p><p class="text-xs text-dim font-mono uppercase mt-1">Node Wi-Fi Deployments</p></div>
+        <div><p class="font-display text-2xl md:text-3xl font-semibold text-violet">Offline</p><p class="text-xs text-dim font-mono uppercase mt-1">Custom AI Pipelines</p></div>
+      </div>
+    </div>
+
+    <div class="relative reveal mx-auto w-full max-w-sm lg:max-w-none">
+      <div class="schematic-frame overflow-hidden relative tick">
+        <span class="frame-tag" style="top:12px; left:12px;">MD // NODE-01</span>
+        <img src="assets/images/hero-portrait.jpg" alt="Masanso David, Software &amp; Systems Engineer, working on a laptop" class="w-full h-[420px] md:h-[520px] object-cover">
+        <div class="absolute bottom-0 inset-x-0 p-4 flex items-center justify-between" style="background:linear-gradient(0deg, rgba(0,0,0,.6), transparent);">
+          <span class="font-mono text-[11px] text-white/90 uppercase tracking-wide">Engineering Node</span>
+          <span class="font-mono text-[11px] text-white/70">UG · 00°21'N</span>
+        </div>
+      </div>
+      <div class="hidden sm:flex absolute -left-6 -bottom-6 surface p-4 items-center gap-3 shadow-2xl border border-token">
+        <span class="pulse-dot"></span>
+        <div>
+          <p class="font-mono text-[11px] text-dim uppercase">Core Domains</p>
+          <p class="font-display text-sm font-medium">Full-Stack · Kernel · Networking · AI</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-5 md:px-8 mt-24 reveal">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="surface p-5 card-lift tick"><p class="font-mono text-[11px] text-signal mb-2">/domain-01</p><h3 class="font-display font-semibold">Full-Stack Development</h3><p class="text-sm text-muted mt-2 leading-relaxed">Node.js, Django, PostgreSQL &amp; React interfaces built for production.</p></div>
+      <div class="surface p-5 card-lift tick"><p class="font-mono text-[11px] text-hazard mb-2">/domain-02</p><h3 class="font-display font-semibold">Android/AOSP &amp; Linux Kernel</h3><p class="text-sm text-muted mt-2 leading-relaxed">Custom ROMs, kernel compilation, scheduler and driver-level tuning.</p></div>
+      <div class="surface p-5 card-lift tick"><p class="font-mono text-[11px] text-violet mb-2">/domain-03</p><h3 class="font-display font-semibold">Enterprise Networking</h3><p class="text-sm text-muted mt-2 leading-relaxed">MikroTik, OpenWrt, multi-AP Wi-Fi, VLANs and captive portals.</p></div>
+      <div class="surface p-5 card-lift tick"><p class="font-mono text-[11px] text-signal mb-2">/domain-04</p><h3 class="font-display font-semibold">Offline AI</h3><p class="text-sm text-muted mt-2 leading-relaxed">Local LLM inference pipelines that run entirely without internet.</p></div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-5 md:px-8 mt-20 reveal">
+    <div class="flex items-end justify-between mb-6">
+      <div><p class="eyebrow">FEATURED</p><h2 class="font-display text-2xl md:text-3xl font-semibold mt-2">Case studies in production</h2></div>
+      <a href="#projects" class="hidden sm:inline-flex font-mono text-xs uppercase text-signal items-center gap-1 hover:gap-2 transition-all">View all <span>&rarr;</span></a>
+    </div>
+    <div class="grid md:grid-cols-3 gap-5">
+      <div class="surface p-5 card-lift"><div class="flex flex-wrap gap-2 mb-4"><span class="badge">Ollama</span><span class="badge">Python</span></div><h3 class="font-display font-semibold">Offline Custom AI System</h3><p class="text-sm text-muted mt-2">Local LLM &amp; inference pipeline operating with zero connectivity.</p></div>
+      <div class="surface p-5 card-lift"><div class="flex flex-wrap gap-2 mb-4"><span class="badge">Django</span><span class="badge">SQLite</span></div><h3 class="font-display font-semibold">LAN E-Commerce (LANShop)</h3><p class="text-sm text-muted mt-2">Local-network trading platform for zero-internet environments.</p></div>
+      <div class="surface p-5 card-lift"><div class="flex flex-wrap gap-2 mb-4"><span class="badge">Node.js</span><span class="badge">PostgreSQL</span></div><h3 class="font-display font-semibold">Garbage Management System</h3><p class="text-sm text-muted mt-2">GPS-based community logistics and waste-collection tracking.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 ABOUT ===== -->
+<section id="about" class="py-24 md:py-32 border-t border-token relative">
+  <div class="max-w-7xl mx-auto px-5 md:px-8 grid lg:grid-cols-[0.85fr,1.15fr] gap-14 items-start">
+    <div class="reveal lg:sticky lg:top-28">
+      <div class="schematic-frame overflow-hidden relative tick max-w-sm mx-auto lg:mx-0">
+        <span class="frame-tag" style="top:12px; left:12px;">MD // PROFILE</span>
+        <img src="assets/images/about-portrait.jpg" alt="Masanso David reviewing engineering documentation in an office" class="w-full h-[460px] object-cover">
+      </div>
+    </div>
+
+    <div class="reveal">
+      <p class="eyebrow mb-3">02 // ABOUT</p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold tracking-tight">Engineering Profile</h2>
+      <p class="mt-6 text-muted leading-relaxed">Masanso David studies Software Engineering at Cavendish University Uganda while running active field operations through Masa Enterprise — an ISP and technical services outfit — and MasaDroid, his Android modding and repair hub. That combination means his engineering is tested twice: once in code review, once on-site with real routers, real handsets, and real bandwidth constraints in Namanve.</p>
+      <p class="mt-4 text-muted leading-relaxed">He moves comfortably between application layers and physical infrastructure — writing the backend that runs a service, then pulling cable or flashing firmware to make sure it actually reaches the people using it. He currently works as a Network Engineer at Masa Enterprise in Mukono &amp; Namanve, engineering network infrastructure and maintaining business hardware and software systems.</p>
+
+      <div class="grid sm:grid-cols-2 gap-4 mt-10">
+        <div class="surface p-5"><h3 class="font-display font-semibold text-sm text-signal">Resilience</h3><p class="text-sm text-muted mt-2 leading-relaxed">Systems designed to keep working when power, signal, or internet don't cooperate.</p></div>
+        <div class="surface p-5"><h3 class="font-display font-semibold text-sm text-hazard">Low-Level Performance</h3><p class="text-sm text-muted mt-2 leading-relaxed">Kernel and driver-level tuning over surface-level fixes.</p></div>
+        <div class="surface p-5"><h3 class="font-display font-semibold text-sm text-violet">Offline-First Reliability</h3><p class="text-sm text-muted mt-2 leading-relaxed">Built to run without dependency on a live internet connection.</p></div>
+        <div class="surface p-5"><h3 class="font-display font-semibold text-sm text-signal">System Optimization</h3><p class="text-sm text-muted mt-2 leading-relaxed">Squeezing real performance out of constrained, real-world hardware.</p></div>
+      </div>
+
+      <h3 class="font-display font-semibold mt-12 mb-4">Specialization Pillars</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="badge">Software Architecture</span><span class="badge">Hardware-Software Interfaces</span><span class="badge">Android / Linux Kernels</span><span class="badge">ISP Network Admin</span><span class="badge">Offline AI Inference</span>
+      </div>
+
+      <!-- Experience -->
+      <h3 class="font-display font-semibold mt-12 mb-4">Experience</h3>
+      <div class="surface p-5 flex items-start gap-4">
+        <div class="w-10 h-10 surface-2 flex items-center justify-center border border-token shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-signal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7h-3V5a2 2 0 00-2-2H9a2 2 0 00-2 2v2H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 5h6v2H9V5z"/></svg>
+        </div>
+        <div>
+          <p class="font-display font-medium">Network Engineer — Masa Enterprise</p>
+          <p class="text-sm text-muted mt-1">Mukono, Namanve, Uganda · Jan 2025 — Current</p>
+          <p class="text-sm text-muted mt-2 leading-relaxed">Engineers and runs network infrastructure, maintains business hardware and software systems, and drives technical marketing to support service growth.</p>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <h3 class="font-display font-semibold mt-10 mb-4">Education</h3>
+      <div class="space-y-3">
+        <div class="surface p-5 flex items-start gap-4">
+          <div class="w-10 h-10 surface-2 flex items-center justify-center border border-token shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-signal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.42A12 12 0 0121 12v3a12 12 0 01-18 0v-3a12 12 0 012.84-3.42L12 14z"/></svg>
+          </div>
+          <div><p class="font-display font-medium">BSE — Software Engineering</p><p class="text-sm text-muted mt-1">Cavendish University Uganda, Kampala · Jul 2025 — Current</p></div>
+        </div>
+        <div class="surface p-5 flex items-start gap-4">
+          <div class="w-10 h-10 surface-2 flex items-center justify-center border border-token shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-hazard" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.42A12 12 0 0121 12v3a12 12 0 01-18 0v-3a12 12 0 012.84-3.42L12 14z"/></svg>
+          </div>
+          <div><p class="font-display font-medium">UACE</p><p class="text-sm text-muted mt-1">St. Peter's Bombo Kalule, Luwero · Feb 2023 — Aug 2024</p></div>
+        </div>
+        <div class="surface p-5 flex items-start gap-4">
+          <div class="w-10 h-10 surface-2 flex items-center justify-center border border-token shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.42A12 12 0 0121 12v3a12 12 0 01-18 0v-3a12 12 0 012.84-3.42L12 14z"/></svg>
+          </div>
+          <div><p class="font-display font-medium">UCE</p><p class="text-sm text-muted mt-1">Namilyango High School Gulama, Namilyango · Jan 2021 — Nov 2022</p></div>
+        </div>
+      </div>
+
+      <h3 class="font-display font-semibold mt-12 mb-4">Certifications &amp; Training</h3>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="surface p-5"><p class="font-mono text-[11px] text-hazard uppercase mb-2">Enterprise Academies</p><ul class="text-sm text-muted space-y-1.5"><li>Cisco Networking Academy — Network Design &amp; Routing</li><li>IBM — Systems Analysis &amp; Design</li><li>Microsoft</li></ul></div>
+        <div class="surface p-5"><p class="font-mono text-[11px] text-violet uppercase mb-2">Professional Platforms</p><ul class="text-sm text-muted space-y-1.5"><li>Coursera &amp; University Partners — Data Analysis &amp; Software Engineering</li><li>freeCodeCamp — Full-Stack Web &amp; Algorithms</li></ul></div>
+      </div>
+
+      <h3 class="font-display font-semibold mt-10 mb-3">Professional Goals</h3>
+      <p class="text-sm text-muted leading-relaxed max-w-2xl">Building high-concurrency network backbones, autonomous software solutions, and embedded systems that hold up under Uganda's real infrastructure conditions.</p>
+
+      <h3 class="font-display font-semibold mt-10 mb-3">Outside Engineering</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="badge">Video gaming</span><span class="badge">Space exploration</span><span class="badge">Star gazing</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 03 ENGINEERING ===== -->
+<section id="engineering" class="py-24 md:py-32 border-t border-token">
+  <div class="max-w-7xl mx-auto px-5 md:px-8">
+    <div class="max-w-2xl reveal">
+      <p class="eyebrow mb-3">03 // ENGINEERING</p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold tracking-tight">What can Masanso actually engineer?</h2>
+      <p class="mt-4 text-muted leading-relaxed">A scannable technical matrix — from language fluency to bare-metal networking gear.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-5 mt-14">
+      <div class="surface p-6 reveal tick"><h3 class="font-display font-semibold text-signal mb-4 text-sm uppercase tracking-wide">Programming Languages</h3><div class="flex flex-wrap gap-2"><span class="badge">C</span><span class="badge">C++</span><span class="badge">Java</span><span class="badge">Kotlin</span><span class="badge">Python</span><span class="badge">PHP</span><span class="badge">JavaScript</span><span class="badge">TypeScript</span><span class="badge">SQL</span><span class="badge">HTML5/CSS3</span></div></div>
+      <div class="surface p-6 reveal tick"><h3 class="font-display font-semibold text-hazard mb-4 text-sm uppercase tracking-wide">Android &amp; AOSP</h3><div class="flex flex-wrap gap-2"><span class="badge">LineageOS</span><span class="badge">PixelOS</span><span class="badge">AOSP Trees</span><span class="badge">TWRP/OrangeFox</span><span class="badge">Magisk/KernelSU</span><span class="badge">ADB/Fastboot</span><span class="badge">System Apps</span></div></div>
+      <div class="surface p-6 reveal tick"><h3 class="font-display font-semibold text-violet mb-4 text-sm uppercase tracking-wide">Linux &amp; Kernel</h3><div class="flex flex-wrap gap-2"><span class="badge">Kernel Compilation</span><span class="badge">CPU Governor/Scheduler</span><span class="badge">Driver Integration</span><span class="badge">Memory Management</span><span class="badge">C++ Flashing Tools</span></div></div>
+      <div class="surface p-6 reveal tick"><h3 class="font-display font-semibold text-signal mb-4 text-sm uppercase tracking-wide">AI &amp; Offline Systems</h3><div class="flex flex-wrap gap-2"><span class="badge">Ollama</span><span class="badge">Local Inference</span><span class="badge">Python Model Integration</span><span class="badge">Claude API Workflows</span></div></div>
+      <div class="surface p-6 reveal tick"><h3 class="font-display font-semibold text-hazard mb-4 text-sm uppercase tracking-wide">Full-Stack Development</h3><div class="flex flex-wrap gap-2"><span class="badge">Node.js</span><span class="badge">Express</span><span class="badge">Django</span><span class="badge">PostgreSQL</span><span class="badge">MySQL</span><span class="badge">Firebase</span><span class="badge">REST APIs</span><span class="badge">Tailwind</span></div></div>
+      <div class="surface p-6 reveal tick"><h3 class="font-display font-semibold text-violet mb-4 text-sm uppercase tracking-wide">Databases</h3><div class="flex flex-wrap gap-2"><span class="badge">Schema Design</span><span class="badge">Indexing</span><span class="badge">Firebase Realtime Sync</span><span class="badge">SQLite / LevelDB</span></div></div>
+      <div class="surface p-6 reveal tick md:col-span-2"><h3 class="font-display font-semibold text-signal mb-4 text-sm uppercase tracking-wide">Networking &amp; OpenWrt</h3><div class="flex flex-wrap gap-2"><span class="badge">MikroTik RouterOS/WinBox</span><span class="badge">OpenWrt Firmware</span><span class="badge">Cisco Packet Tracer</span><span class="badge">DHCP/DNS</span><span class="badge">VLANs</span><span class="badge">WireGuard VPN</span><span class="badge">Firewall Rules</span><span class="badge">Multi-AP (Ruijie/Tenda/Huawei/MikroTik)</span><span class="badge">Captive Portals</span><span class="badge">Voucher Systems</span></div></div>
+      <div class="surface p-6 reveal tick md:col-span-2"><h3 class="font-display font-semibold text-hazard mb-4 text-sm uppercase tracking-wide">Tools &amp; Practices</h3><div class="flex flex-wrap gap-2"><span class="badge">Git/GitHub</span><span class="badge">Linux CLI</span><span class="badge">Docker</span><span class="badge">Termux</span><span class="badge">VS Code</span><span class="badge">Android Studio</span><span class="badge">IntelliJ IDEA</span><span class="badge">System Analysis &amp; Design</span></div></div>
+    </div>
+
+    <div class="mt-14 surface p-6 md:p-8 reveal">
+      <p class="font-mono text-[11px] text-dim uppercase mb-6">Proficiency Snapshot</p>
+      <div class="grid sm:grid-cols-2 gap-x-10 gap-y-6">
+        <div><div class="flex justify-between text-sm mb-2"><span>Full-Stack Development</span><span class="font-mono text-dim">92%</span></div><div class="skill-bar"><span data-width="92"></span></div></div>
+        <div><div class="flex justify-between text-sm mb-2"><span>Android / AOSP / Kernel</span><span class="font-mono text-dim">88%</span></div><div class="skill-bar"><span data-width="88"></span></div></div>
+        <div><div class="flex justify-between text-sm mb-2"><span>Enterprise Networking</span><span class="font-mono text-dim">85%</span></div><div class="skill-bar"><span data-width="85"></span></div></div>
+        <div><div class="flex justify-between text-sm mb-2"><span>Offline AI Systems</span><span class="font-mono text-dim">80%</span></div><div class="skill-bar"><span data-width="80"></span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 04 PROJECTS ===== -->
+<section id="projects" class="py-24 md:py-32 border-t border-token">
+  <div class="max-w-7xl mx-auto px-5 md:px-8">
+    <div class="max-w-2xl reveal">
+      <p class="eyebrow mb-3">04 // PROJECTS</p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold tracking-tight">Engineering case studies</h2>
+      <p class="mt-4 text-muted leading-relaxed">Systems built, shipped, and field-tested — from kernel to network edge.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6 mt-14">
+      <article class="surface p-6 md:p-7 card-lift reveal tick">
+        <div class="flex items-start justify-between gap-4"><h3 class="font-display text-xl font-semibold">Offline Custom AI System</h3><span class="badge shrink-0">01</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Overview:</span> A local LLM and inference pipeline that operates entirely without internet connectivity.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Problem &amp; Objective:</span> Deliver usable AI assistance in low-connectivity environments where cloud APIs aren't reliable.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Architecture:</span> Ollama-managed local models served through a lightweight Python integration layer.</p>
+        <div class="flex flex-wrap gap-2 mt-4"><span class="badge">Ollama</span><span class="badge">Python</span><span class="badge">Local Inference</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Key Features:</span> Zero-connectivity operation, private on-device inference, pluggable model swapping.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Challenges &amp; Results:</span> Balancing model size against hardware limits; delivered a working offline assistant on constrained local hardware.</p>
+        <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 font-mono text-xs uppercase text-signal hover:gap-3 transition-all">Repository <span>&rarr;</span></a>
+      </article>
+
+      <article class="surface p-6 md:p-7 card-lift reveal tick">
+        <div class="flex items-start justify-between gap-4"><h3 class="font-display text-xl font-semibold">LAN E-Commerce System (LANShop)</h3><span class="badge shrink-0">02</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Overview:</span> Offline, local-network Django e-commerce platform for zero-internet trading.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Objective:</span> Give sellers and buyers a full storefront experience with no external connectivity required.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Engineering Work:</span> Three-role access (admin/seller/buyer), product catalog with image uploads, session cart &amp; checkout, order tracking, and internal messaging.</p>
+        <div class="flex flex-wrap gap-2 mt-4"><span class="badge">Django 4.2</span><span class="badge">SQLite</span><span class="badge">Offline LAN</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Results:</span> Delivered as a single packaged, deployable project for local network use.</p>
+        <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 font-mono text-xs uppercase text-signal hover:gap-3 transition-all">Repository <span>&rarr;</span></a>
+      </article>
+
+      <article class="surface p-6 md:p-7 card-lift reveal tick">
+        <div class="flex items-start justify-between gap-4"><h3 class="font-display text-xl font-semibold">Garbage Management System</h3><span class="badge shrink-0">03</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Overview:</span> Full-stack community logistics and waste-collection tracking web app.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Architecture:</span> Node.js/Express + Prisma + PostgreSQL (Neon), Firebase Auth (Google Sign-In), Cloudinary, React/Vite/Tailwind.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Key Features:</span> Role-based access (Client/Collector/Admin), GPS pickup requests, recurring scheduling, photo uploads, cash-on-collection, per-kg UGX pricing.</p>
+        <div class="flex flex-wrap gap-2 mt-4"><span class="badge">Node.js</span><span class="badge">Prisma</span><span class="badge">PostgreSQL</span><span class="badge">Firebase</span><span class="badge">Cloudinary</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Results:</span> Production-ready, deployed on Render and GitHub Pages.</p>
+        <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 font-mono text-xs uppercase text-signal hover:gap-3 transition-all">Repository <span>&rarr;</span></a>
+      </article>
+
+      <article class="surface p-6 md:p-7 card-lift reveal tick">
+        <div class="flex items-start justify-between gap-4"><h3 class="font-display text-xl font-semibold">Custom Linux Kernel</h3><span class="badge shrink-0">04</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Overview:</span> High-performance, stripped-down kernel tuned for specific mobile/embedded hardware.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Engineering Work:</span> Governor/scheduler tuning, driver integration, and memory-management adjustments for constrained devices.</p>
+        <div class="flex flex-wrap gap-2 mt-4"><span class="badge">C</span><span class="badge">Kernel Compilation</span><span class="badge">Embedded Hardware</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Results:</span> Measurable gains in responsiveness and battery efficiency on target devices.</p>
+        <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 font-mono text-xs uppercase text-signal hover:gap-3 transition-all">Repository <span>&rarr;</span></a>
+      </article>
+
+      <article class="surface p-6 md:p-7 card-lift reveal tick">
+        <div class="flex items-start justify-between gap-4"><h3 class="font-display text-xl font-semibold">Custom AOSP Build</h3><span class="badge shrink-0">05</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Overview:</span> Personalized Android Open Source Project image with custom system services.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Engineering Work:</span> AOSP source tree management, custom system-app integration, and recovery flashing (TWRP/OrangeFox).</p>
+        <div class="flex flex-wrap gap-2 mt-4"><span class="badge">AOSP</span><span class="badge">Java/Kotlin</span><span class="badge">ADB/Fastboot</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Results:</span> Stable custom builds flashed and validated across multiple device targets.</p>
+        <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 font-mono text-xs uppercase text-signal hover:gap-3 transition-all">Repository <span>&rarr;</span></a>
+      </article>
+
+      <article class="surface p-6 md:p-7 card-lift reveal tick">
+        <div class="flex items-start justify-between gap-4"><h3 class="font-display text-xl font-semibold">Fully Functional Android Calculator</h3><span class="badge shrink-0">06</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Overview:</span> Precision Android mathematical engine with unit-conversion systems.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Engineering Work:</span> Native Android app covering arithmetic, scientific functions, and multi-category unit conversion.</p>
+        <div class="flex flex-wrap gap-2 mt-4"><span class="badge">Kotlin</span><span class="badge">Android Studio</span></div>
+        <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 font-mono text-xs uppercase text-signal hover:gap-3 transition-all">Repository <span>&rarr;</span></a>
+      </article>
+
+      <article class="surface p-6 md:p-7 card-lift reveal tick lg:col-span-2">
+        <div class="flex items-start justify-between gap-4"><h3 class="font-display text-xl font-semibold">Custom OpenWrt Configurations &amp; Tuning</h3><span class="badge shrink-0">07</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Overview:</span> Enterprise multi-AP captive portal and bandwidth-throttling router optimization.</p>
+        <p class="text-sm text-muted mt-2 leading-relaxed"><span class="text-ink font-medium">Engineering Work:</span> OpenWrt firmware builds, VLAN segmentation, WireGuard VPN, custom firewall rules, and voucher-based captive portals across Ruijie, Tenda, Huawei, and MikroTik hardware.</p>
+        <div class="flex flex-wrap gap-2 mt-4"><span class="badge">OpenWrt</span><span class="badge">MikroTik WinBox</span><span class="badge">WireGuard</span><span class="badge">Captive Portals</span></div>
+        <p class="text-sm text-muted mt-3 leading-relaxed"><span class="text-ink font-medium">Results:</span> Stable multi-node deployments serving live ISP customers under Masa Enterprise.</p>
+        <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 font-mono text-xs uppercase text-signal hover:gap-3 transition-all">Repository <span>&rarr;</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 05 EXPERIENCE & CONTACT ===== -->
+<section id="contact" class="py-24 md:py-32 border-t border-token">
+  <div class="max-w-7xl mx-auto px-5 md:px-8">
+    <div class="max-w-2xl reveal">
+      <p class="eyebrow mb-3">05 // EXPERIENCE &amp; CONTACT</p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold tracking-tight">Let's connect</h2>
+      <p class="mt-4 text-muted leading-relaxed">Field-tested experience across software, ISP operations, and mobile repair/mods.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-5 mt-12">
+      <div class="surface p-5 reveal"><h3 class="font-display font-semibold text-sm text-signal">Software Development</h3><p class="text-sm text-muted mt-2 leading-relaxed">Full-stack builds shipped to production, from database schema to deployed UI.</p></div>
+      <div class="surface p-5 reveal"><h3 class="font-display font-semibold text-sm text-hazard">ISP Operations — Masa Enterprise</h3><p class="text-sm text-muted mt-2 leading-relaxed">Multi-node wireless deployment, router flashing utilities, local server hardware, billing systems.</p></div>
+      <div class="surface p-5 reveal"><h3 class="font-display font-semibold text-sm text-violet">Mobile Systems — MasaDroid</h3><p class="text-sm text-muted mt-2 leading-relaxed">Device repairs, custom ROM flashing, and Android system-level modding.</p></div>
+    </div>
+
+    <div class="grid lg:grid-cols-[1fr,1.1fr] gap-10 mt-16">
+      <div class="reveal">
+        <div class="surface p-6 md:p-7 space-y-5">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 surface-2 border border-token flex items-center justify-center shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-signal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>
+            <div><p class="text-xs text-dim font-mono uppercase">Email</p><a href="mailto:masadavid010@gmail.com" class="font-display hover:text-signal transition-colors">masadavid010@gmail.com</a></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 surface-2 border border-token flex items-center justify-center shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-hazard" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div>
+            <div><p class="text-xs text-dim font-mono uppercase">Phone / WhatsApp</p><a href="tel:+256764411376" class="font-display hover:text-hazard transition-colors">+256 764 411 376</a></div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 surface-2 border border-token flex items-center justify-center shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+            <div><p class="text-xs text-dim font-mono uppercase">Location</p><p class="font-display">Mukono &amp; Namanve, Uganda</p></div>
+          </div>
+
+          <div class="dashed"></div>
+
+          <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="flex items-center justify-between surface-2 p-4 border border-token hover:border-signal transition-colors">
+            <span class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 007.87 10.93c.58.1.79-.25.79-.56v-2.16c-3.2.7-3.88-1.36-3.88-1.36-.53-1.33-1.29-1.69-1.29-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 015.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.77.12 3.06.74.8 1.18 1.83 1.18 3.09 0 4.43-2.7 5.4-5.28 5.69.42.36.78 1.08.78 2.18v3.23c0 .31.21.67.8.56A11.5 11.5 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+              <span class="font-mono text-sm">@Masa010pro</span>
+            </span>
+            <span class="text-dim">&rarr;</span>
+          </a>
+
+          <a href="assets/cv/masanso-david-cv.pdf" download class="btn-hazard flex items-center justify-center gap-2 py-3 font-mono text-xs uppercase tracking-wide">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M7 10l5 5 5-5M12 15V3"/></svg>
+            Download CV
+          </a>
+
+          <div class="pt-2">
+            <p class="font-mono text-[11px] text-dim uppercase mb-2">Reference</p>
+            <p class="text-sm font-display">Namutebi Prossy — Fast 6G Networks</p>
+            <p class="text-xs text-dim font-mono mt-1">+256 758 808016 · nmtbprss@gmail.com</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <form id="contactForm" class="surface p-6 md:p-7 space-y-4" action="https://formsubmit.co/masadavid010@gmail.com" method="POST">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div><label class="text-xs font-mono uppercase text-dim block mb-2" for="name">Name</label><input id="name" name="name" type="text" required class="w-full border border-token px-4 py-3 text-sm" placeholder="Your name"></div>
+            <div><label class="text-xs font-mono uppercase text-dim block mb-2" for="email">Email</label><input id="email" name="email" type="email" required class="w-full border border-token px-4 py-3 text-sm" placeholder="you@example.com"></div>
+          </div>
+          <div><label class="text-xs font-mono uppercase text-dim block mb-2" for="subject">Subject</label><input id="subject" name="subject" type="text" required class="w-full border border-token px-4 py-3 text-sm" placeholder="Project inquiry"></div>
+          <div><label class="text-xs font-mono uppercase text-dim block mb-2" for="message">Message</label><textarea id="message" name="message" rows="5" required class="w-full border border-token px-4 py-3 text-sm resize-none" placeholder="Tell me about what you're building..."></textarea></div>
+          <button type="submit" class="btn-primary w-full py-3 font-mono text-xs uppercase tracking-wide">Send Message</button>
+          <p class="text-xs text-dim text-center">Submits directly to masadavid010@gmail.com</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="border-t border-token py-10 lg:pl-16">
+  <div class="max-w-7xl mx-auto px-5 md:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+    <p class="font-mono text-xs text-dim">© <span id="year"></span> Masanso David — Software &amp; Systems Engineer.</p>
+    <div class="flex items-center gap-5">
+      <a href="https://github.com/Masa010pro" target="_blank" rel="noopener" class="text-dim hover:text-signal transition-colors font-mono text-xs">GitHub</a>
+      <a href="mailto:masadavid010@gmail.com" class="text-dim hover:text-signal transition-colors font-mono text-xs">Email</a>
+      <a href="tel:+256764411376" class="text-dim hover:text-signal transition-colors font-mono text-xs">WhatsApp</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var root = document.documentElement;
+  var toggleBtn = document.getElementById('themeToggle');
+  var iconMoon = document.getElementById('iconMoon');
+  var iconSun = document.getElementById('iconSun');
+
+  function applyTheme(theme){
+    if(theme === 'light'){ root.classList.add('light'); iconMoon.classList.add('hidden'); iconSun.classList.remove('hidden'); }
+    else { root.classList.remove('light'); iconMoon.classList.remove('hidden'); iconSun.classList.add('hidden'); }
+  }
+  var stored = localStorage.getItem('md-theme');
+  var systemPrefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  applyTheme(stored || (systemPrefersLight ? 'light' : 'dark'));
+
+  toggleBtn.addEventListener('click', function(){
+    var next = root.classList.contains('light') ? 'dark' : 'light';
+    applyTheme(next);
+    localStorage.setItem('md-theme', next);
+  });
+  if(window.matchMedia){
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e){
+      if(!localStorage.getItem('md-theme')) applyTheme(e.matches ? 'light' : 'dark');
+    });
+  }
+
+  var menuBtn = document.getElementById('mobileMenuBtn');
+  var closeBtn = document.getElementById('mobileCloseBtn');
+  var drawer = document.getElementById('mobileDrawer');
+  var overlay = document.getElementById('mobileOverlay');
+  function openDrawer(){ drawer.classList.add('open'); overlay.classList.remove('hidden'); document.body.style.overflow='hidden'; }
+  function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.add('hidden'); document.body.style.overflow=''; }
+  menuBtn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('[data-nav-mobile]').forEach(function(el){ el.addEventListener('click', closeDrawer); });
+
+  var sectionIds = ['home','about','engineering','projects','contact'];
+  var sections = sectionIds.map(function(id){ return document.getElementById(id); });
+  var navLinks = document.querySelectorAll('[data-nav]');
+  var railNodes = document.querySelectorAll('.rail-node');
+  var railFill = document.getElementById('railFill');
+
+  function positionRailNodes(){
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    railNodes.forEach(function(node){
+      var id = node.getAttribute('data-node');
+      var sec = document.getElementById(id);
+      if(sec && docHeight > 0){
+        var pct = Math.min(100, (sec.offsetTop / docHeight) * 100);
+        node.style.top = pct + '%';
+      }
+    });
+  }
+
+  function setActive(){
+    var scrollPos = window.scrollY + 140;
+    var current = sections[0];
+    sections.forEach(function(sec){ if(sec && sec.offsetTop <= scrollPos) current = sec; });
+    navLinks.forEach(function(link){
+      link.classList.toggle('active', current && link.getAttribute('href') === '#' + current.id);
+    });
+    railNodes.forEach(function(node){
+      node.classList.toggle('active', current && node.getAttribute('data-node') === current.id);
+    });
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    if(docHeight > 0 && railFill){
+      var railTrack = document.getElementById('traceRail');
+      var railHeight = railTrack ? railTrack.offsetHeight : 0;
+      var scrollPct = Math.min(1, window.scrollY / docHeight);
+      railFill.style.height = (scrollPct * railHeight) + 'px';
+    }
+  }
+  window.addEventListener('scroll', setActive, { passive:true });
+  window.addEventListener('resize', function(){ positionRailNodes(); setActive(); });
+  positionRailNodes();
+  setActive();
+
+  var revealEls = document.querySelectorAll('.reveal');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){ entry.target.classList.add('in'); observer.unobserve(entry.target); }
+    });
+  }, { threshold:0.12 });
+  revealEls.forEach(function(el){ observer.observe(el); });
+
+  var bars = document.querySelectorAll('.skill-bar > span');
+  var barObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){ entry.target.style.width = entry.target.getAttribute('data-width') + '%'; barObserver.unobserve(entry.target); }
+    });
+  }, { threshold:0.3 });
+  bars.forEach(function(el){ barObserver.observe(el); });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* Terminal boot log typing effect */
+  var bootLines = [
+    "$ booting masanso@field-node ...",
+    "loading modules: fullstack, kernel, rf, offline-ai ... [OK]",
+    "uplink: mukono-namanve.ug ... [STABLE]",
+    "status: available_for_engagements"
+  ];
+  var bootEl = document.getElementById('bootLog');
+  var lineIdx = 0;
+
+  function typeLine(){
+    if(lineIdx >= bootLines.length){
+      var caret = document.createElement('span');
+      caret.className = 'caret';
+      bootEl.appendChild(caret);
+      return;
+    }
+    var lineDiv = document.createElement('div');
+    lineDiv.className = 'ln';
+    var isLast = lineIdx === bootLines.length - 1;
+    lineDiv.innerHTML = (isLast ? '<span style="color:var(--signal)">' + bootLines[lineIdx] + '</span>' : '<span style="color:var(--ink-muted)">' + bootLines[lineIdx] + '</span>');
+    bootEl.appendChild(lineDiv);
+    lineIdx++;
+    setTimeout(typeLine, 420);
+  }
+  setTimeout(typeLine, 350);
+
+})();
+</script>
+</body>
+</html>
